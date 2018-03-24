@@ -4,4 +4,4 @@ lib/*
 
 # Ignore any executables
 bin/*
-
+libs/
