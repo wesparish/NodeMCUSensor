@@ -11,7 +11,7 @@
 class SensorBase {
 public: 
   
-  MetricBase readSensor();
+  bool readSensor(MetricBase &metricBase);
 };
 
 #endif //_SENSORBASE_H

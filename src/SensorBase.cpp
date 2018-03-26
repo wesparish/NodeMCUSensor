@@ -15,6 +15,7 @@
 /**
  * @return MetricBase
  */
-MetricBase SensorBase::readSensor() {
-  return MetricBase();
+bool SensorBase::readSensor(MetricBase &metricBase) {
+  metricBase = MetricBase();
+  return true;
 }
