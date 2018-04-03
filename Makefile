@@ -1,7 +1,15 @@
+download:
+	mkdir -p libs tools
+	[ -d libs/NtpClient ]       || git clone https://github.com/gmag11/NtpClient.git libs/NtpClient
+	[ -d libs/ArduinoJson ]     || git clone https://github.com/bblanchon/ArduinoJson.git libs/ArduinoJson
+	[ -d libs/Time ]            || git clone https://github.com/PaulStoffregen/Time libs/Time
+	[ -d tools/makeEspArduino ] || git clone https://github.com/wesparish/makeEspArduino.git tools/makeEspArduino
+	[ -d tools/esp8266 ]        || git clone https://github.com/wesparish/Arduino.git tools/esp8266
+
 # My makefile
 SKETCH = ./src/TempSensorMain.ino
 
-ESP_ROOT=/home/wes/esp8266
+ESP_ROOT=tools/esp8266
 
 INCLUDE_DIRS += ./include
 INCLUDE_DIRS += ./libs/Time/
@@ -19,4 +27,5 @@ BUILD_ROOT = ./build/
 # UPLOAD_PORT = /dev/ttyUSB1
 # BOARD = esp210
 #
-include $(HOME)/makeEspArduino/makeEspArduino.mk
+#-include $(HOME)/makeEspArduino/makeEspArduino.mk
+-include tools/makeEspArduino/makeEspArduino.mk

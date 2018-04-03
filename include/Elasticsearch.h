@@ -31,7 +31,7 @@ public:
   /**
    * @param metricBase
    */
-  bool indexRecord(MetricBase &metricBase );
+  bool indexRecord(MetricBase &metricBase);
 private: 
   bool httpPost(std::string payload);
 
