@@ -4,7 +4,7 @@ download:
 	[ -d libs/ArduinoJson ]     || git clone https://github.com/bblanchon/ArduinoJson.git libs/ArduinoJson
 	[ -d libs/Time ]            || git clone https://github.com/PaulStoffregen/Time libs/Time
 	[ -d tools/makeEspArduino ] || git clone https://github.com/wesparish/makeEspArduino.git tools/makeEspArduino
-	[ -d tools/esp8266 ]        || git clone https://github.com/wesparish/Arduino.git tools/esp8266
+	[ -d tools/esp8266 ]        || git clone https://github.com/wesparish/Arduino.git tools/esp8266 && cd tools/esp8266/tools && python get.py
 
 CLEAN_DIRS = libs tools
 
