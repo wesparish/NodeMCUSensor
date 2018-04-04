@@ -6,6 +6,8 @@ download:
 	[ -d tools/makeEspArduino ] || git clone https://github.com/wesparish/makeEspArduino.git tools/makeEspArduino
 	[ -d tools/esp8266 ]        || git clone https://github.com/wesparish/Arduino.git tools/esp8266
 
+CLEAN_DIRS = libs tools
+
 # My makefile
 SKETCH = ./src/TempSensorMain.ino
 
@@ -27,5 +29,5 @@ BUILD_ROOT = ./build/
 # UPLOAD_PORT = /dev/ttyUSB1
 # BOARD = esp210
 #
-#-include $(HOME)/makeEspArduino/makeEspArduino.mk
+
 -include tools/makeEspArduino/makeEspArduino.mk
