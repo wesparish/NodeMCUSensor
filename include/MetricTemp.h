@@ -2,7 +2,6 @@
  * Project NodeMCUSensor
  */
 
-
 #ifndef _METRICTEMP_H
 #define _METRICTEMP_H
 
