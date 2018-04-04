@@ -12,7 +12,7 @@
 // Library includes
 #include "NtpClientLib.h"
 #include "TimeLib.h"
-#include <ArduinoJson.h>
+#include "ArduinoJson.h"
 
 // Custom includes
 #include "MetricBase.h"

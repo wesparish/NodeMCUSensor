@@ -33,8 +33,9 @@ std::string MetricTemp::getJSON()
   json["heat_index"] = heatIndex;
   json["@timestamp"] = timestamp;
 
-  std::string jsonString;
-  json.printTo(jsonString);
+  char tmpStr[128] = {0};
+  json.printTo(tmpStr);
+  std::string jsonString(tmpStr);
 
   return jsonString;
 }
