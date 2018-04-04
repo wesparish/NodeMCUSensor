@@ -14,7 +14,10 @@ SensorTemp    *tSensor = 0;
 
 void setup()
 {
-  
+  es = new Elasticsearch("wessvrroom", 
+                         "elasticsearch.weshouse:9200", 
+                         "weshouse");
+  tSensor = new SensorTemp();
 }
 
 void loop()
