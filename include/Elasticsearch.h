@@ -25,7 +25,7 @@ public:
    * constructor
    */
   Elasticsearch(std::string indexBasename,
-		std::string elasticsearchURL,
+		        std::string elasticsearchURL,
                 std::string location);
 
   /**
