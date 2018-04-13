@@ -15,13 +15,13 @@
  * constructor
  */
 Elasticsearch::Elasticsearch(std::string indexBasename,
-		             std::string elasticsearchURL,
+		                     std::string elasticsearchURL,
                              std::string location)
 {
   _indexBasename = indexBasename;
   _elasticsearchURL = elasticsearchURL;
   _location = location;
-
+  
   startNTP();
 }
 
