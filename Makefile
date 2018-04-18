@@ -32,7 +32,7 @@ LIBS += ./libs/ArduinoJson/src/
 LIBS += $(ESP_ROOT)/libraries/ESP8266HTTPClient/src/
 LIBS += $(ESP_ROOT)/libraries/ESP8266WiFi/src/
 
-VERBOSE=1
+#VERBOSE=1
 BUILD_ROOT = ./build/
 #
 # UPLOAD_PORT = /dev/ttyUSB1
