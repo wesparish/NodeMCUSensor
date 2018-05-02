@@ -29,8 +29,11 @@ INCLUDE_DIRS += libs/ArduinoJson/src/
 LIBS += ./libs/Time
 LIBS += ./libs/NtpClient/src/
 LIBS += ./libs/ArduinoJson/src/
+LIBS += ./libs/WiFiManager/
 LIBS += $(ESP_ROOT)/libraries/ESP8266HTTPClient/src/
 LIBS += $(ESP_ROOT)/libraries/ESP8266WiFi/src/
+LIBS += $(ESP_ROOT)/libraries/ESP8266WebServer/
+LIBS += $(ESP_ROOT)/libraries/DNSServer/
 
 #VERBOSE=1
 BUILD_ROOT = ./build/
