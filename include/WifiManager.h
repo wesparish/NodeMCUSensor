@@ -6,6 +6,8 @@
 #ifndef _WIFIMANAGER_H
 #define _WIFIMANAGER_H
 
+#include "Filesystem.h"
+
 #include <FS.h>
 #include "DNSServer.h"
 #include "ESP8266WebServer.h"
@@ -15,14 +17,14 @@
 class WifiManager {
 public:
   WifiManager();
-  WifiManager(std::vector <WiFiManagerParameter> wifiParameters,
+  WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
               bool resetWifiSettings);
-  WifiManager(std::vector <WiFiManagerParameter> wifiParameters);
+  WifiManager(std::vector <WiFiManagerParameter> &wifiParameters);
   
   bool connectToWifi();
   
 protected:
-  void loadFromFS();
+  void loadFromFS(std::vector <WiFiManagerParameter> &wifiParameters);
   static void configModeCallback(WiFiManager *myWiFiManager);
   void saveConfig(std::vector <WiFiManagerParameter> &wifiParameters);
   static void saveConfigCallback();

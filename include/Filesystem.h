@@ -13,13 +13,16 @@
 class Filesystem
 {
 public:
-  Filesystem();  
+  Filesystem();
 
   // Returns a value from FS, given a key
   std::string loadFromFs(std::string key);
   
   // Saves a KV pair to FS (append or overwrite)
-  bool saveToFs(std::string key, std::string value);
+  bool updateKey(std::string key, std::string value);
+  
+  // Flushes data out to filesystem
+  bool flushToFs();
 protected:
   // Read all KVs from SPIFFS
   std::map <std::string, std::string> readFromSPIFFS();

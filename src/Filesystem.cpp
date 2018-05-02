@@ -16,11 +16,18 @@
  */
 Filesystem::Filesystem()
 {
+  _kvPairs = readFromSPIFFS();
 }
 
 std::string 
 Filesystem::loadFromFs(std::string key)
 {
+  std::string retVal = "";
+  if(_kvPairs.find(key) != _kvPairs.end())
+  {
+    retVal = _kvPairs[key];  
+  }
+  return retVal;
 }
 
 std::map <std::string, std::string> 
@@ -78,4 +85,34 @@ Filesystem::readFromSPIFFS()
   }
   
   return retVal;
+}
+
+bool
+Filesystem::updateKey(std::string key, std::string value)
+{
+  _kvPairs[key] = value;
+}
+
+bool
+Filesystem::flushToFs()
+{
+  DynamicJsonBuffer jsonBuffer;
+  JsonObject& json = jsonBuffer.createObject();
+  
+  std::map<std::string, std::string>::iterator i;
+  for ( i = _kvPairs.begin(); 
+        i != _kvPairs.end(); 
+        i++ )
+  {
+      json[i->first.c_str()] = i->second.c_str(); 
+  }
+  
+  File configFile = SPIFFS.open("/config.json", "w");
+  if (!configFile) {
+    Serial.println("failed to open config file for writing");
+  }
+
+  json.printTo(Serial);
+  json.printTo(configFile);
+  configFile.close();
 }

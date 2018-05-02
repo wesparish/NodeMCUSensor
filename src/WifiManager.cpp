@@ -43,7 +43,7 @@ WifiManager::WifiManager()
  * Constructor with parameter: 
  * vector - configuration parameters
  */
-WifiManager::WifiManager(std::vector <WiFiManagerParameter> wifiParameters)
+WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters)
 {
   // With parameters, don't reset settings
   // Local intialization. Once its business is done,
@@ -83,7 +83,7 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> wifiParameters)
  * vector - configuration parameters
  * bool - reset settings
  */
-WifiManager::WifiManager(std::vector <WiFiManagerParameter> wifiParameters,
+WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
                          bool resetSettings)
 {
   // With parameters, reset settings
@@ -91,8 +91,11 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> wifiParameters,
   //   there is no need to keep it around
   WiFiManager wifiManager;
   
-  wifiManager.resetSettings();
-  
+  if (resetSettings)
+  {
+    wifiManager.resetSettings();
+  }
+
   for (std::vector<WiFiManagerParameter>::size_type a = 0; 
        a != wifiParameters.size(); 
        a++)
@@ -139,25 +142,19 @@ void WifiManager::saveConfigCallback () {
 
 void saveConfig(std::vector <WiFiManagerParameter> &wifiParameters)
 {
+  Filesystem fs;
+  
   Serial.println("saving config to fs");
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
   
   for (int a = 0; 
        a != wifiParameters.size(); 
        ++a)
   {
-    json[wifiParameters[a].getID()] = wifiParameters[a].getValue();
+    fs.updateKey(wifiParameters[a].getID(), 
+                 wifiParameters[a].getValue());
   }
   
-  File configFile = SPIFFS.open("/config.json", "w");
-  if (!configFile) {
-    Serial.println("failed to open config file for writing");
-  }
-
-  json.printTo(Serial);
-  json.printTo(configFile);
-  configFile.close();
+  fs.flushToFs();
 }
 
 /**
@@ -168,6 +165,20 @@ bool WifiManager::connectToWifi()
   return false;
 }
 
-void WifiManager::loadFromFS()
+void WifiManager::loadFromFS(std::vector <WiFiManagerParameter> &wifiParameters)
 {
+  Filesystem fs;
+  for (int i=0; i < wifiParameters.size(); ++i)
+  {
+    std::string savedValue = fs.loadFromFs(wifiParameters[0].getID()); 
+    if (savedValue != "")
+    {
+      WiFiManagerParameter *newParam = new 
+        WiFiManagerParameter(wifiParameters[i].getID(),
+                             savedValue.c_str(),
+                             savedValue.c_str(),
+                             savedValue.size()+1);
+      wifiParameters[i] = *newParam;
+    }
+  }
 }
