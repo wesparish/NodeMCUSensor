@@ -1,0 +1,23 @@
+ESP_ROOT=tools/esp8266
+
+INCLUDE_DIRS += ./include
+INCLUDE_DIRS += ./libs/Time/
+INCLUDE_DIRS += ./libs/NtpClient/src/
+INCLUDE_DIRS += ./libs/WiFiManager/
+INCLUDE_DIRS += $(ESP_ROOT)/libraries/ESP8266WiFi/src/
+INCLUDE_DIRS += $(ESP_ROOT)/libraries/ESP8266HTTPClient/src/
+INCLUDE_DIRS += $(ESP_ROOT)/libraries/DNSServer/src/
+INCLUDE_DIRS += $(ESP_ROOT)/libraries/ESP8266WebServer/src/
+INCLUDE_DIRS += libs/ArduinoJson/src/
+
+LIBS += ./libs/Time
+LIBS += ./libs/NtpClient/src/
+LIBS += ./libs/ArduinoJson/src/
+LIBS += ./libs/WiFiManager/
+LIBS += $(ESP_ROOT)/libraries/ESP8266HTTPClient/src/
+LIBS += $(ESP_ROOT)/libraries/ESP8266WiFi/src/
+LIBS += $(ESP_ROOT)/libraries/ESP8266WebServer/
+LIBS += $(ESP_ROOT)/libraries/DNSServer/
+
+#VERBOSE=1
+BUILD_DIR = ./build/

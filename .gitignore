@@ -3,9 +3,15 @@ build
 lib/*
 tools
 libs
+test/googletest
 
 # Ignore any executables
 bin/*
 libs/
+
+# Ignore any object files
+*.o
+*.a
+*.d
 
 trash
