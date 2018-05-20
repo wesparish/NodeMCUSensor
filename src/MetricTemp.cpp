@@ -14,17 +14,33 @@
 std::string MetricTemp::getJSON()
 {
   int hour=0, minute=0, second=0, month=0, day=0, year=0;
+  
+  #ifdef UNITTEST
+  // LOAD TIME FOR UNIT TESTING
+  time_t rawtime = 0;
+  struct tm *timeinfo;
+  //time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  hour = timeinfo->tm_hour;
+  minute = timeinfo->tm_min;
+  second = timeinfo->tm_sec;
+  month = timeinfo->tm_mon;
+  day = timeinfo->tm_yday;
+  year = timeinfo->tm_year + 1900;
+  #else
+  // USE ARDUINO LIBRARY
   sscanf(NTP.getTimeDateString().c_str(),
          "%02d:%02d:%02d %02d/%02d/%04d",
          &hour, &minute, &second,
          &day, &month, &year);
+  #endif  
 
   char timestamp[32] = {0};
   sprintf(timestamp,
           "%04d-%02d-%02dT%02d:%02d:%02dZ",
           year, month, day,
           hour, minute, second);
-
+  
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
   json["location"] = location.c_str();

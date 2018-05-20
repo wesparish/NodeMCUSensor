@@ -1,6 +1,3 @@
-#define ARDUINO 101
-#define NETWORK_TYPE NETWORK_ESP8266
-
 #include "gtest/gtest.h"
 
 #include "MetricTemp.h"
