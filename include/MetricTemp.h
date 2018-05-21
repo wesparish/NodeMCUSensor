@@ -9,8 +9,14 @@
 #include <string>
 
 // Library includes
+#ifdef UNITTEST
+#include <time.h>
+#include <stdio.h>
+#else
 #include "NtpClientLib.h"
 #include "TimeLib.h"
+#endif
+
 #include "ArduinoJson.h"
 
 // Custom includes
@@ -18,7 +24,15 @@
 
 class MetricTemp: public MetricBase {
 public:
+  MetricTemp();
+  MetricTemp(int temp,
+             int humidity,
+             std::string location,
+             float heatIndex);
+
   std::string getJSON();
+
+protected:
 
 private: 
   float temp;
