@@ -11,7 +11,7 @@
 class MetricBase {
 public: 
   
-  std::string getJSON();
+  virtual std::string getJSON() = 0;
 };
 
 #endif //_METRICBASE_H
