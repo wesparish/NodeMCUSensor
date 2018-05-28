@@ -11,7 +11,7 @@
 class SensorBase {
 public: 
   
-  bool readSensor(MetricBase &metricBase);
+  virtual bool readSensor(MetricBase &metricBase) = 0;
 };
 
 #endif //_SENSORBASE_H

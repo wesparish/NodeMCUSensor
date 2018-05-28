@@ -11,27 +11,32 @@
 #include <time.h>
 
 // Library includes
+#ifndef UNITTEST
 #include "NtpClientLib.h"
 #include "TimeLib.h"
 #include <ESP8266HTTPClient.h>
+#endif
 
 // Custom includes
 #include "MetricBase.h"
 
 class Elasticsearch {
 public:
-
   /**
    * constructor
    */
   Elasticsearch(std::string indexBasename,
-		        std::string elasticsearchURL,
+		            std::string elasticsearchURL,
                 std::string location);
+
+  virtual ~Elasticsearch(){}
 
   /**
    * @param metricBase
    */
-  bool indexRecord(MetricBase &metricBase);
+  virtual bool indexRecord(MetricBase &metricBase) = 0;
+  std::string getFullURL();
+protected:
 private: 
   bool httpPost(std::string payload);
 
@@ -40,6 +45,17 @@ private:
   std::string _location;
   
   bool startNTP();
+};
+
+class MockElasticsearch : public Elasticsearch
+{
+  public:
+    MockElasticsearch(std::string indexBasename,
+                      std::string elasticsearchURL,
+                      std::string location) :
+      Elasticsearch(indexBasename, elasticsearchURL, location) {}
+  
+    MOCK_METHOD1(indexRecord, bool(MetricBase &metricBase));
 };
 
 #endif //_ELASTICSEARCH_H
