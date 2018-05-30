@@ -3,10 +3,10 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-#include "Elasticsearch.h"
+#include "Filesystem.h"
 
 namespace {
-  TEST(Elasticsearch, MockConstructor) {
+  TEST(Filesystem, MockConstructor) {
     MockElasticsearch es("testindex",
                          "http://eshost:1234",
                          "testlocation");

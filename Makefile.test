@@ -121,4 +121,18 @@ $(TEST_BUILD_DIR)/elasticsearch : $(TEST_BUILD_DIR)/elasticsearch_unittest.o \
                                   $(TEST_BUILD_DIR)/gtest_main.a \
                                   $(TEST_BUILD_DIR)/gmock_main.a \
                                   $(TEST_BUILD_DIR)/Elasticsearch.cpp.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ -o $@	
+	
+### Filesystem ###
+	
+$(TEST_BUILD_DIR)/filesystem_unittest.o : $(TEST_DIR)/filesystem_unittest.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $^ -o $@
+
+$(TEST_BUILD_DIR)/Filesystem.cpp.o : src/Filesystem.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $^ -o $@
+
+$(TEST_BUILD_DIR)/Filesystem : $(TEST_BUILD_DIR)/filesystem_unittest.o \
+                               $(TEST_BUILD_DIR)/gtest_main.a \
+                               $(TEST_BUILD_DIR)/gmock_main.a \
+                               $(TEST_BUILD_DIR)/Filesystem.cpp.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $^ -o $@

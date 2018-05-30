@@ -31,4 +31,12 @@ private:
   std::map <std::string, std::string> _kvPairs;
 };
 
+class MockFilesystem : public Filesystem
+{
+  public:
+    MockFilesystem() {}
+  
+    MOCK_METHOD1(indexRecord, bool(MetricBase &metricBase));
+};
+
 #endif
