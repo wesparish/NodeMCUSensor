@@ -9,3 +9,5 @@ bin/*
 libs/
 
 trash
+.pioenvs
+.piolibdeps

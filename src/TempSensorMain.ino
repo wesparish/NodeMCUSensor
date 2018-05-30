@@ -1,5 +1,8 @@
 //#include <iostream>
 
+// Included for PlatformIO
+#include <SPI.h>
+
 // Includes
 #include "Elasticsearch.h"
 #include "SensorTemp.h"
