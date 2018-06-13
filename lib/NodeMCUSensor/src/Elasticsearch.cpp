@@ -11,18 +11,20 @@
  * Elasticsearch interface class
  */
 
+bool Elasticsearch::ntpSynced = false;
+
 /**
  * constructor
  */
 Elasticsearch::Elasticsearch(std::string indexBasename,
-		                     std::string elasticsearchURL,
+                             std::string elasticsearchURL,
                              std::string location)
 {
   _indexBasename = indexBasename;
   _elasticsearchURL = elasticsearchURL;
   _location = location;
-  
-  startNTP();
+
+//  Elasticsearch::startNTP();
 }
 
 
@@ -62,6 +64,7 @@ bool Elasticsearch::httpPost(std::string payload)
   http.end();
 
   Serial.printf("[%d] %s\n", httpCode, http.getString().c_str());
+  return httpCode < 400;
 }
 
 
@@ -71,8 +74,6 @@ bool Elasticsearch::httpPost(std::string payload)
 bool Elasticsearch::startNTP()
 {
   NTP.begin();
-
-  bool ntpSynced = false;
 
   NTP.onNTPSyncEvent ([](NTPSyncEvent_t event)
   {
@@ -88,12 +89,14 @@ bool Elasticsearch::startNTP()
     {
       Serial.print ("Got NTP time: ");
       Serial.println (NTP.getTimeDateString (NTP.getLastNTPSync ()));
+      Elasticsearch::ntpSynced = true;
     }
   });
 
   while ( !ntpSynced )
   {
     delay(500);
+    Serial.println("Waiting for NTP...");
   }
 
   return true;

@@ -1,3 +1,5 @@
+#ifndef UNIT_TEST
+
 //#include <iostream>
 
 // Included for PlatformIO
@@ -38,3 +40,4 @@ void loop()
   delay(SLEEP_TIME);
 }
 
+#endif

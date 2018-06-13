@@ -32,14 +32,16 @@ public:
    * @param metricBase
    */
   bool indexRecord(MetricBase &metricBase);
+
+  static bool startNTP();
+  static bool ntpSynced;
+
 private: 
   bool httpPost(std::string payload);
 
   std::string _indexBasename;
   std::string _elasticsearchURL;
   std::string _location;
-  
-  bool startNTP();
 };
 
 #endif //_ELASTICSEARCH_H

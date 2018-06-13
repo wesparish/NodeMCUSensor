@@ -18,6 +18,12 @@
 
 class MetricTemp: public MetricBase {
 public:
+  MetricTemp();
+  MetricTemp(int temp,
+             int humidity,
+             std::string location,
+             float heatIndex);
+
   std::string getJSON();
 
 private: 
