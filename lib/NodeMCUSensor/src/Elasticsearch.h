@@ -25,7 +25,7 @@ public:
    * constructor
    */
   Elasticsearch(std::string indexBasename,
-		        std::string elasticsearchURL,
+                std::string elasticsearchURL,
                 std::string location);
 
   /**
@@ -33,8 +33,7 @@ public:
    */
   bool indexRecord(MetricBase &metricBase);
 
-  static bool startNTP();
-  static bool ntpSynced;
+  std::string getFullURL();
 
 private: 
   bool httpPost(std::string payload);

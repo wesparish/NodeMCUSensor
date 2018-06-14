@@ -19,8 +19,8 @@
 class MetricTemp: public MetricBase {
 public:
   MetricTemp();
-  MetricTemp(int temp,
-             int humidity,
+  MetricTemp(float temp,
+             float humidity,
              std::string location,
              float heatIndex);
 

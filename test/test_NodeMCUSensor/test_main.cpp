@@ -15,8 +15,8 @@ using namespace std;
 
 #include "secret.h"
 
-Elasticsearch *es;
-WifiManager *wm;
+//Elasticsearch *es;
+//WifiManager *wm;
 
 //////////////////
 // WIFI SUPPORT //
@@ -63,7 +63,6 @@ void setUp(void) {
 //                         "unittest");
 
   NTP.begin();
-  Serial.println("DONE wes");
 }
 
 // void tearDown(void) {
@@ -86,20 +85,51 @@ void test_MetricTemp_getJson(void) {
 
   MetricTemp mt;
   string expectedJson = "{\"location\":\"\","
-                              "\"temp\":0,"
-                              "\"humidity\":0,"
-                              "\"heat_index\":0,"
-                              "\"@timestamp\":\"" + 
-                              std::string(currentTime) + 
-                              "\"}";
+                           "\"temp\":0,"
+                           "\"humidity\":0,"
+                           "\"heat_index\":0,"
+                           "\"@timestamp\":\"" + 
+                           std::string(currentTime) + 
+                           "\"}";
+  MetricTemp mt2(79.1, 40.5, "SunnyLocation", 75.123);
+  string expectedJson2 = "{\"location\":\"SunnyLocation\","
+                            "\"temp\":79.1,"
+                            "\"humidity\":40.5,"
+                            "\"heat_index\":75.123,"
+                            "\"@timestamp\":\"" + 
+                            std::string(currentTime) + 
+                            "\"}";
   TEST_ASSERT_EQUAL_STRING(mt.getJSON().c_str(), expectedJson.c_str());
+  TEST_ASSERT_EQUAL_STRING(mt2.getJSON().c_str(), expectedJson2.c_str());
 }
 
+void test_Elasticsearch_getFullURL(void) {
+  // Load time from NTP 
+  int hour=0, minute=0, second=0, month=0, day=0, year=0;
+  sscanf(NTP.getTimeDateString().c_str(),
+         "%02d:%02d:%02d %02d/%02d/%04d",
+         &hour, &minute, &second,
+         &day, &month, &year);
+
+  Elasticsearch es("testindex",
+                   "http://elasticsearch.weshouse:9200",
+                   "unittest-location");
+  char expectedFullUrl[128] = {0};
+  sprintf(expectedFullUrl, "%s/%s-%s-%04d.%02d.%02d/doc",
+                           "http://elasticsearch.weshouse:9200",
+                           "testindex",
+                           "unittest-location",
+                           year, month, day);
+
+  TEST_ASSERT_EQUAL_STRING(es.getFullURL().c_str(), 
+                           expectedFullUrl);
+}
 
 void setup() {
     UNITY_BEGIN();
 
     RUN_TEST(test_MetricTemp_getJson);
+    RUN_TEST(test_Elasticsearch_getFullURL);
 
     UNITY_END();
 }

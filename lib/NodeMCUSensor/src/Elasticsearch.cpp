@@ -11,8 +11,6 @@
  * Elasticsearch interface class
  */
 
-bool Elasticsearch::ntpSynced = false;
-
 /**
  * constructor
  */
@@ -23,8 +21,6 @@ Elasticsearch::Elasticsearch(std::string indexBasename,
   _indexBasename = indexBasename;
   _elasticsearchURL = elasticsearchURL;
   _location = location;
-
-//  Elasticsearch::startNTP();
 }
 
 
@@ -38,7 +34,7 @@ bool Elasticsearch::indexRecord(MetricBase &metricToSend)
   return httpPost(payload);
 }
 
-bool Elasticsearch::httpPost(std::string payload)
+std::string Elasticsearch::getFullURL()
 {
   int hour=0, minute=0, second=0, month=0, day=0, year=0;
   sscanf(NTP.getTimeDateString().c_str(),
@@ -48,17 +44,21 @@ bool Elasticsearch::httpPost(std::string payload)
 
   char fullUrl[128] = {0};
   sprintf(fullUrl,
-          "http://%s/%s-%s-%04d.%02d.%02d/doc",
+          "%s/%s-%s-%04d.%02d.%02d/doc",
           _elasticsearchURL.c_str(),
           _indexBasename.c_str(),
           _location.c_str(),
           year, month, day);
+  return std::string(fullUrl);
+}
 
-  Serial.println(fullUrl);
+bool Elasticsearch::httpPost(std::string payload)
+{
+  std::string fullUrl = getFullURL();
 
   int httpCode = -1;
   HTTPClient http;
-  http.begin(fullUrl);
+  http.begin(fullUrl.c_str());
   http.addHeader("Content-Type", String("application/json"));
   httpCode = http.POST(payload.c_str());
   http.end();
@@ -67,37 +67,3 @@ bool Elasticsearch::httpPost(std::string payload)
   return httpCode < 400;
 }
 
-
-/**
- * @return bool
- */
-bool Elasticsearch::startNTP()
-{
-  NTP.begin();
-
-  NTP.onNTPSyncEvent ([](NTPSyncEvent_t event)
-  {
-    if (event)
-    {
-      Serial.print ("Time Sync error: ");
-      if (event == noResponse)
-        Serial.println ("NTP server not reachable");
-      else if (event == invalidAddress)
-        Serial.println ("Invalid NTP server address");
-    }
-    else
-    {
-      Serial.print ("Got NTP time: ");
-      Serial.println (NTP.getTimeDateString (NTP.getLastNTPSync ()));
-      Elasticsearch::ntpSynced = true;
-    }
-  });
-
-  while ( !ntpSynced )
-  {
-    delay(500);
-    Serial.println("Waiting for NTP...");
-  }
-
-  return true;
-}
