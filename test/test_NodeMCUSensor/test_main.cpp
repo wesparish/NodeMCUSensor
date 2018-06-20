@@ -2,8 +2,10 @@
 #include <unity.h>
 
 #include "MetricTemp.h"
+#include "MetricCurrent.h"
 #include "Elasticsearch.h"
 #include "WifiManager.h"
+#include "SensorTemp.h"
 
 #include <ESP8266WiFi.h>
 
@@ -135,12 +137,21 @@ void test_Elasticsearch_indexRecord(void) {
   TEST_ASSERT_TRUE(es.indexRecord(&mt2));
 }
 
+void test_SensorTemp_readSensor(void) {
+  MetricTemp mt(79.1, 40.5, "SunnyLocation", 75.123);
+  MetricCurrent mc;
+  SensorTemp st;
+  TEST_ASSERT_TRUE(st.readSensor(mt));
+  TEST_ASSERT_FALSE(st.readSensor(mc));
+}
+
 void setup() {
     UNITY_BEGIN();
 
     RUN_TEST(test_MetricTemp_getJson);
     RUN_TEST(test_Elasticsearch_getFullURL);
     RUN_TEST(test_Elasticsearch_indexRecord);
+    RUN_TEST(test_SensorTemp_readSensor);
 
     UNITY_END();
 }

@@ -11,6 +11,12 @@
  * Metric returned by a temperature sensor
  */
 
+std::string
+MetricTemp::getType()
+{
+  return "MetricTemp";
+}
+
 MetricTemp::MetricTemp()
 {
   this->temp = 0;

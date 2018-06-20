@@ -25,7 +25,7 @@ public:
              float heatIndex);
 
   std::string getJSON();
-
+  std::string getType();
 private: 
   float temp;
   float humidity;

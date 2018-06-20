@@ -10,6 +10,8 @@
 
 
 class SensorTemp: public SensorBase {
+public:
+  virtual bool readSensor(MetricBase &metricBase);
 };
 
 #endif //_SENSORTEMP_H

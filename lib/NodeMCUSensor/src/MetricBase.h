@@ -15,6 +15,7 @@ public:
   
   virtual std::string getJSON() = 0;
   virtual std::string getTimestamp();
+  virtual std::string getType() = 0;
 };
 
 #endif //_METRICBASE_H
