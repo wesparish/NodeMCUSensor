@@ -125,11 +125,22 @@ void test_Elasticsearch_getFullURL(void) {
                            expectedFullUrl);
 }
 
+void test_Elasticsearch_indexRecord(void) {
+  MetricTemp mt2(79.1, 40.5, "SunnyLocation", 75.123);
+  Elasticsearch es("testindex",
+                   "http://elasticsearch.weshouse:9200",
+                   "unittest");
+  TEST_ASSERT_TRUE(es.indexRecord(mt2.getJSON()));
+  TEST_ASSERT_TRUE(es.indexRecord(mt2));
+  TEST_ASSERT_TRUE(es.indexRecord(&mt2));
+}
+
 void setup() {
     UNITY_BEGIN();
 
     RUN_TEST(test_MetricTemp_getJson);
     RUN_TEST(test_Elasticsearch_getFullURL);
+    RUN_TEST(test_Elasticsearch_indexRecord);
 
     UNITY_END();
 }

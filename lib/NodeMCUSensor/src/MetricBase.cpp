@@ -12,13 +12,6 @@
  */
 
 
-/**
- * @return string
- */
-std::string MetricBase::getJSON() {
-  return "";
-}
-
 std::string MetricBase::getTimestamp()
 {
   int hour=0, minute=0, second=0, month=0, day=0, year=0;

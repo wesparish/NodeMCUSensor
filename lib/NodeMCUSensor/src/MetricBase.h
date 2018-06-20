@@ -13,8 +13,8 @@
 class MetricBase {
 public: 
   
-  std::string getJSON();
-  std::string getTimestamp();
+  virtual std::string getJSON() = 0;
+  virtual std::string getTimestamp();
 };
 
 #endif //_METRICBASE_H

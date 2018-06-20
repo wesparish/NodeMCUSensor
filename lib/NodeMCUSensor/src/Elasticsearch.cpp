@@ -28,9 +28,18 @@ Elasticsearch::Elasticsearch(std::string indexBasename,
  * @param metricBase 
  * @return bool
  */
+bool Elasticsearch::indexRecord(MetricBase *metricToSend)
+{
+  return httpPost(metricToSend->getJSON());
+}
+
 bool Elasticsearch::indexRecord(MetricBase &metricToSend)
 {
-  std::string payload = metricToSend.getJSON();
+  return httpPost(metricToSend.getJSON());
+}
+
+bool Elasticsearch::indexRecord(std::string payload)
+{
   return httpPost(payload);
 }
 
@@ -52,7 +61,7 @@ std::string Elasticsearch::getFullURL()
   return std::string(fullUrl);
 }
 
-bool Elasticsearch::httpPost(std::string payload)
+bool Elasticsearch::httpPost(std::string const &payload)
 {
   std::string fullUrl = getFullURL();
 
@@ -63,7 +72,7 @@ bool Elasticsearch::httpPost(std::string payload)
   httpCode = http.POST(payload.c_str());
   http.end();
 
-  Serial.printf("[%d] %s\n", httpCode, http.getString().c_str());
+  Serial.printf("\nHTTP Code: [%d] getString(): %s\n", httpCode, http.getString().c_str());
   return httpCode < 400;
 }
 

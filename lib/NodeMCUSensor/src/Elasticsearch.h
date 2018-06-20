@@ -31,12 +31,14 @@ public:
   /**
    * @param metricBase
    */
+  bool indexRecord(MetricBase *metricBase);
   bool indexRecord(MetricBase &metricBase);
+  bool indexRecord(std::string payload);
 
   std::string getFullURL();
 
 private: 
-  bool httpPost(std::string payload);
+  bool httpPost(std::string const &payload);
 
   std::string _indexBasename;
   std::string _elasticsearchURL;
