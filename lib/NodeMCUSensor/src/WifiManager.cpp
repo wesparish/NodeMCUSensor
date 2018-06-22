@@ -146,7 +146,7 @@ void saveConfig(std::vector <WiFiManagerParameter> &wifiParameters)
   
   Serial.println("saving config to fs");
   
-  for (int a = 0; 
+  for (unsigned int a = 0;
        a != wifiParameters.size(); 
        ++a)
   {
@@ -168,7 +168,7 @@ bool WifiManager::connectToWifi()
 void WifiManager::loadFromFS(std::vector <WiFiManagerParameter> &wifiParameters)
 {
   Filesystem fs;
-  for (int i=0; i < wifiParameters.size(); ++i)
+  for (unsigned int i=0; i < wifiParameters.size(); ++i)
   {
     std::string savedValue = fs.loadFromFs(wifiParameters[0].getID()); 
     if (savedValue != "")

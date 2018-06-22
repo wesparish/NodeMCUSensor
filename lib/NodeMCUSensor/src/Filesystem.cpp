@@ -7,7 +7,7 @@
 
 /**
  * Filesystem implementation
- * 
+ *
  * Filesystem management class
  */
 
@@ -19,18 +19,18 @@ Filesystem::Filesystem()
   _kvPairs = readFromSPIFFS();
 }
 
-std::string 
+std::string
 Filesystem::loadFromFs(std::string key)
 {
   std::string retVal = "";
   if(_kvPairs.find(key) != _kvPairs.end())
   {
-    retVal = _kvPairs[key];  
+    retVal = _kvPairs[key];
   }
   return retVal;
 }
 
-std::map <std::string, std::string> 
+std::map <std::string, std::string>
 Filesystem::readFromSPIFFS()
 {
   std::map <std::string, std::string> retVal;
@@ -51,7 +51,7 @@ Filesystem::readFromSPIFFS()
       //file exists, reading and loading
       Serial.println("reading config file");
       File configFile = SPIFFS.open("/config.json", "r");
-      if (configFile) 
+      if (configFile)
       {
         Serial.println("opened config file");
         size_t size = configFile.size();
@@ -67,23 +67,23 @@ Filesystem::readFromSPIFFS()
           Serial.println("\nparsed json");
 
           //_jsonConfigFileData = json;
-          for (JsonObject::iterator it=json.begin(); it!=json.end(); ++it) 
+          for (JsonObject::iterator it=json.begin(); it!=json.end(); ++it)
           {
             // Store the KV pair into the return map
             retVal[it->key] = it->value.as<char*>();
           }
-        } else 
+        } else
         {
           Serial.println("failed to load json config");
         }
       }
     }
-  } 
-  else 
+  }
+  else
   {
     Serial.println("failed to mount FS");
   }
-  
+
   return retVal;
 }
 
@@ -91,6 +91,7 @@ bool
 Filesystem::updateKey(std::string key, std::string value)
 {
   _kvPairs[key] = value;
+  return true;
 }
 
 bool
@@ -98,15 +99,15 @@ Filesystem::flushToFs()
 {
   DynamicJsonBuffer jsonBuffer;
   JsonObject& json = jsonBuffer.createObject();
-  
+
   std::map<std::string, std::string>::iterator i;
-  for ( i = _kvPairs.begin(); 
-        i != _kvPairs.end(); 
+  for ( i = _kvPairs.begin();
+        i != _kvPairs.end();
         i++ )
   {
-      json[i->first.c_str()] = i->second.c_str(); 
+      json[i->first.c_str()] = i->second.c_str();
   }
-  
+
   File configFile = SPIFFS.open("/config.json", "w");
   if (!configFile) {
     Serial.println("failed to open config file for writing");
@@ -115,4 +116,5 @@ Filesystem::flushToFs()
   json.printTo(Serial);
   json.printTo(configFile);
   configFile.close();
+  return true;
 }

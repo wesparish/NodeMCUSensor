@@ -138,11 +138,22 @@ void test_Elasticsearch_indexRecord(void) {
 }
 
 void test_SensorTemp_readSensor(void) {
-  MetricTemp mt(79.1, 40.5, "SunnyLocation", 75.123);
+  MetricTemp mt;
   MetricCurrent mc;
-  SensorTemp st;
+  SensorTemp st(5,DHT22);
+  SensorTemp st2(5);
+  SensorTemp st3;
+
+  // Test all constructors
   TEST_ASSERT_TRUE(st.readSensor(mt));
+  TEST_ASSERT_TRUE(st2.readSensor(mt));
+  TEST_ASSERT_TRUE(st3.readSensor(mt));
+  // Should fail to read with the wrong metric type
   TEST_ASSERT_FALSE(st.readSensor(mc));
+  // Expect a reasonable temperature, humidity and heat index back
+  TEST_ASSERT_TRUE(mt.getTemp() > 50 && mt.getTemp() < 120);
+  TEST_ASSERT_TRUE(mt.getHumidity() > 10 && mt.getHumidity() < 100);
+  TEST_ASSERT_TRUE(mt.getHeatIndex() > 10 && mt.getHeatIndex() < 120);
 }
 
 void setup() {

@@ -36,6 +36,42 @@ MetricTemp::MetricTemp(float temp,
   this->heatIndex = heatIndex;
 }
 
+void
+MetricTemp::setTemp(float temp)
+{
+  this->temp = temp;
+}
+
+void
+MetricTemp::setHumidity(float humidity)
+{
+  this->humidity = humidity;
+}
+
+void
+MetricTemp::setHeatIndex(float heatIndex)
+{
+  this->heatIndex = heatIndex;
+}
+
+float
+MetricTemp::getTemp()
+{
+  return this->temp;
+}
+
+float
+MetricTemp::getHumidity()
+{
+  return this->humidity;
+}
+
+float
+MetricTemp::getHeatIndex()
+{
+  return this->heatIndex;
+}
+
 std::string MetricTemp::getJSON()
 {
   DynamicJsonBuffer jsonBuffer;

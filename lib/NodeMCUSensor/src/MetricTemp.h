@@ -26,6 +26,14 @@ public:
 
   std::string getJSON();
   std::string getType();
+
+  void setTemp(float temp);
+  void setHumidity(float humidity);
+  void setHeatIndex(float heatIndex);
+
+  float getTemp();
+  float getHumidity();
+  float getHeatIndex();
 private: 
   float temp;
   float humidity;
