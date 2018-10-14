@@ -6,6 +6,7 @@
 #include "Elasticsearch.h"
 #include "WifiManager.h"
 #include "SensorTemp.h"
+#include "Filesystem.h"
 
 #include <ESP8266WiFi.h>
 
@@ -156,6 +157,20 @@ void test_SensorTemp_readSensor(void) {
   TEST_ASSERT_TRUE(mt.getHeatIndex() > 10 && mt.getHeatIndex() < 120);
 }
 
+void test_Filesystem_testKV(void) {
+  Filesystem fs;
+  // Missing string expected to be ""
+  TEST_ASSERT_EQUAL_STRING(fs.loadFromFs("testKey-should_not_exist").c_str(), "");
+  // Write a kv pair
+  TEST_ASSERT_TRUE(fs.updateKey("testkey", "testvalue"));
+  TEST_ASSERT_TRUE(fs.updateKey("testkey2", "testvalue2"));
+  // Flush to file
+  TEST_ASSERT_TRUE(fs.flushToFs());
+  // Read from file
+  TEST_ASSERT_EQUAL_STRING(fs.loadFromFs("testkey").c_str(), "testvalue");
+  TEST_ASSERT_EQUAL_STRING(fs.loadFromFs("testkey2").c_str(), "testvalue2");
+}
+
 void setup() {
     UNITY_BEGIN();
 
@@ -163,6 +178,7 @@ void setup() {
     RUN_TEST(test_Elasticsearch_getFullURL);
     RUN_TEST(test_Elasticsearch_indexRecord);
     RUN_TEST(test_SensorTemp_readSensor);
+    RUN_TEST(test_Filesystem_testKV);
 
     UNITY_END();
 }
