@@ -169,6 +169,11 @@ void test_Filesystem_testKV(void) {
   // Read from file
   TEST_ASSERT_EQUAL_STRING(fs.loadFromFs("testkey").c_str(), "testvalue");
   TEST_ASSERT_EQUAL_STRING(fs.loadFromFs("testkey2").c_str(), "testvalue2");
+  // Delete test keys
+  TEST_ASSERT_TRUE(fs.deleteKey("testkey"));
+  TEST_ASSERT_TRUE(fs.deleteKey("testkey2"));
+  // Flush to file
+  TEST_ASSERT_TRUE(fs.flushToFs());
 }
 
 void setup() {

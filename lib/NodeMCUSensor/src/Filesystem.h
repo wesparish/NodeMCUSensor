@@ -20,6 +20,9 @@ public:
   
   // Saves a KV pair to FS (append or overwrite)
   bool updateKey(std::string key, std::string value);
+
+  // Removes a KV pair from FS (delete if exists)
+  bool deleteKey(std::string key);
   
   // Flushes data out to filesystem
   bool flushToFs();

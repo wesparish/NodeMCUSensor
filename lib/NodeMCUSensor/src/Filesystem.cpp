@@ -95,6 +95,13 @@ Filesystem::updateKey(std::string key, std::string value)
 }
 
 bool
+Filesystem::deleteKey(std::string key)
+{
+  _kvPairs.erase(_kvPairs.find(key));
+  return true;
+}
+
+bool
 Filesystem::flushToFs()
 {
   DynamicJsonBuffer jsonBuffer;
