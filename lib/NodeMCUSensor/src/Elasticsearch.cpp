@@ -67,6 +67,7 @@ bool Elasticsearch::httpPost(std::string const &payload)
 
   int httpCode = -1;
   HTTPClient http;
+  //     bool begin(WiFiClient &client, String url);
   http.begin(fullUrl.c_str());
   http.addHeader("Content-Type", String("application/json"));
   httpCode = http.POST(payload.c_str());

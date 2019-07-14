@@ -1,5 +1,6 @@
 .pioenvs
 .piolibdeps
 OBE
-*secret*
+*secret.h*
 stack.txt
+.pio

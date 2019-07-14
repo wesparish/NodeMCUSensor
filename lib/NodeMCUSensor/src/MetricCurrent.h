@@ -27,6 +27,7 @@ public:
   std::string getJSON();
   std::string getType();
 private: 
+  float current;
   /*float temp;
   float humidity;
   std::string location;

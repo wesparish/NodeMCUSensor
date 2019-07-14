@@ -74,17 +74,17 @@ MetricTemp::getHeatIndex()
 
 std::string MetricTemp::getJSON()
 {
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
-  json["location"] = location.c_str();
-  json["temp"] = temp;
-  json["humidity"] = humidity;
-  json["heat_index"] = heatIndex;
-  json["@timestamp"] = getTimestamp().c_str();
+  StaticJsonDocument<128> jsonDocument;
 
-  char tmpStr[128] = {0};
-  json.printTo(tmpStr);
-  std::string jsonString(tmpStr);
+  jsonDocument["location"] = location.c_str();
+  jsonDocument["temp"] = temp;
+  jsonDocument["humidity"] = humidity;
+  jsonDocument["heat_index"] = heatIndex;
+  jsonDocument["@timestamp"] = getTimestamp().c_str();
+
+  char jsonCharStr[128] = {0};
+  serializeJson(jsonDocument, jsonCharStr);
+  std::string jsonString(jsonCharStr);
 
   return jsonString;
 }

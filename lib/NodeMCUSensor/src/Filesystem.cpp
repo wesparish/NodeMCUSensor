@@ -60,17 +60,15 @@ Filesystem::readFromSPIFFS()
 
         configFile.readBytes(buf.get(), size);
         configFile.close();
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& json = jsonBuffer.parseObject(buf.get());
-        if (json.success()) {
-          json.printTo(Serial);
+        StaticJsonDocument<512> jsonDocument;
+        if (DeserializationError::Ok != 
+            deserializeJson(jsonDocument, buf.get()) ) {
+          serializeJson(jsonDocument, Serial);
           Serial.println("\nparsed json");
 
-          //_jsonConfigFileData = json;
-          for (JsonObject::iterator it=json.begin(); it!=json.end(); ++it)
-          {
-            // Store the KV pair into the return map
-            retVal[it->key] = it->value.as<char*>();
+          JsonObject obj = jsonDocument.as<JsonObject>();
+          for (JsonObject::iterator it=obj.begin(); it!=obj.end(); ++it) {
+            retVal[it->key().c_str()] = it->value().as<char*>();
           }
         } else
         {
@@ -104,15 +102,14 @@ Filesystem::deleteKey(std::string key)
 bool
 Filesystem::flushToFs()
 {
-  DynamicJsonBuffer jsonBuffer;
-  JsonObject& json = jsonBuffer.createObject();
+  StaticJsonDocument<512> jsonDocument;
 
   std::map<std::string, std::string>::iterator i;
   for ( i = _kvPairs.begin();
         i != _kvPairs.end();
         i++ )
   {
-      json[i->first.c_str()] = i->second.c_str();
+    jsonDocument[i->first.c_str()] = i->second.c_str();
   }
 
   File configFile = SPIFFS.open("/config.json", "w");
@@ -120,8 +117,8 @@ Filesystem::flushToFs()
     Serial.println("failed to open config file for writing");
   }
 
-  json.printTo(Serial);
-  json.printTo(configFile);
+  serializeJson(jsonDocument, Serial);
+  serializeJson(jsonDocument, configFile);
   configFile.close();
   return true;
 }
