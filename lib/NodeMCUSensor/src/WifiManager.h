@@ -17,16 +17,16 @@
 class WifiManager {
 public:
   WifiManager();
-  WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters,
+  WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
               bool resetWifiSettings);
-  WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters);
+  WifiManager(std::vector <WiFiManagerParameter> &wifiParameters);
   
   bool connectToWifi();
   
 protected:
-  void loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters);
+  void loadFromFS(std::vector <WiFiManagerParameter> &wifiParameters);
   static void configModeCallback(WiFiManager *myWiFiManager);
-  void saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters);
+  void saveConfig(std::vector <WiFiManagerParameter> &wifiParameters);
   static void saveConfigCallback();
   
 private:
