@@ -44,28 +44,28 @@ void onSTADisconnected (WiFiEventStationModeDisconnected event_info) {
 //////////////////
 
 void setUp(void) {
-  static WiFiEventHandler e1, e2, e3;
-
-  WiFi.mode (WIFI_STA);
-  WiFi.begin (YOUR_WIFI_SSID, YOUR_WIFI_PASSWD);
-
-  e1 = WiFi.onStationModeGotIP (onSTAGotIP);
-  e2 = WiFi.onStationModeDisconnected (onSTADisconnected);
-  e3 = WiFi.onStationModeConnected (onSTAConnected);
-
-  Serial.print("WiFi connecting...");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-
-//  wm = new WifiManager();
-//  es = new Elasticsearch("TEST",
-//                         "elasticsearch.weshouse:9200",
-//                         "unittest");
-
-  NTP.begin();
+//   static WiFiEventHandler e1, e2, e3;
+// 
+//   WiFi.mode (WIFI_STA);
+//   WiFi.begin (YOUR_WIFI_SSID, YOUR_WIFI_PASSWD);
+// 
+//   e1 = WiFi.onStationModeGotIP (onSTAGotIP);
+//   e2 = WiFi.onStationModeDisconnected (onSTADisconnected);
+//   e3 = WiFi.onStationModeConnected (onSTAConnected);
+// 
+//   Serial.print("WiFi connecting...");
+//   while (WiFi.status() != WL_CONNECTED)
+//   {
+//     delay(500);
+//     Serial.print(".");
+//   }
+// 
+// //  wm = new WifiManager();
+// //  es = new Elasticsearch("TEST",
+// //                         "elasticsearch.weshouse:9200",
+// //                         "unittest");
+// 
+//   NTP.begin();
 }
 
 // void tearDown(void) {
@@ -176,14 +176,46 @@ void test_Filesystem_testKV(void) {
   TEST_ASSERT_TRUE(fs.flushToFs());
 }
 
+void test_WifiManager_parameters(void) {
+  // Test parameter
+  WiFiManagerParameter parm1("parm1id", "parm1placeholder", "parm1default", 32);
+
+  WiFiManagerParameter *parm2 = new WiFiManagerParameter("parm1id", "parm1placeholder", "parm1default", 32);
+  delete parm2;
+
+  std::vector <WiFiManagerParameter> parmArray;
+  parmArray.push_back(parm1);
+}
+
+void test_WifiManager_testCtor(void) {
+  // Test no parameters, default ctor
+  WifiManager wm();
+
+  // Test parameters, without reset
+  std::vector <WiFiManagerParameter> wifiParms;
+  // WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length);
+  //   WiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
+  char parm1Default[32] = "parm1default";
+  char parm2Default[32] = "parm2default";
+  WiFiManagerParameter parm1("parm1id", "parm1placeholder", parm1Default, 32); 
+  WiFiManagerParameter parm2("parm2id", "parm2placeholder", parm2Default, 32); 
+  wifiParms.push_back(parm1);
+  wifiParms.push_back(parm2);
+
+  WifiManager wm2(wifiParms);
+  
+  // Test parameters, with reset
+}
 void setup() {
     UNITY_BEGIN();
 
-    RUN_TEST(test_MetricTemp_getJson);
-    RUN_TEST(test_Elasticsearch_getFullURL);
-    RUN_TEST(test_Elasticsearch_indexRecord);
-    RUN_TEST(test_SensorTemp_readSensor);
-    RUN_TEST(test_Filesystem_testKV);
+//    RUN_TEST(test_MetricTemp_getJson);
+//    RUN_TEST(test_Elasticsearch_getFullURL);
+//    RUN_TEST(test_Elasticsearch_indexRecord);
+//    RUN_TEST(test_SensorTemp_readSensor);
+//    RUN_TEST(test_Filesystem_testKV);
+    RUN_TEST(test_WifiManager_parameters);
+    RUN_TEST(test_WifiManager_testCtor);
 
     UNITY_END();
 }

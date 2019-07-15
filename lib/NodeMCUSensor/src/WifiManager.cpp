@@ -19,8 +19,6 @@ bool WifiManager::_shouldSaveConfig = false;
 WifiManager::WifiManager()
 {
   // No parameters, don't reset settings
-  // Local intialization. Once its business is done,
-  //   there is no need to keep it around
   WiFiManager wifiManager;
   
   // set callback that gets called when connecting to previous 
@@ -46,16 +44,16 @@ WifiManager::WifiManager()
 WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters)
 {
   // With parameters, don't reset settings
-  // Local intialization. Once its business is done,
-  //   there is no need to keep it around
   WiFiManager wifiManager;
   
+  Serial.println("Loading WifiManagerParameters...");
   for (std::vector<WiFiManagerParameter>::size_type a = 0; 
        a != wifiParameters.size(); 
        a++)
   {
     wifiManager.addParameter(&wifiParameters[a]);
   }
+  Serial.println("Done loading WifiManagerParameters...");
   
   // set callback that gets called when connecting to previous 
   //   WiFi fails, and enters Access Point mode
@@ -65,12 +63,14 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters)
   // fetches ssid and pass and tries to connect
   //   if it does not connect it starts an access point with the specified name
   //   and goes into a blocking loop awaiting configuration
+  Serial.println("Starting WifiManager autoConnect()...");
   if (!wifiManager.autoConnect()) {
     Serial.println("failed to connect and hit timeout");
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
     delay(1000);
   }
+  Serial.println("Finished WifiManager autoConnect()...");
   
   if (WifiManager::_shouldSaveConfig)
   {
@@ -87,8 +87,6 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
                          bool resetSettings)
 {
   // With parameters, reset settings
-  // Local intialization. Once its business is done,
-  //   there is no need to keep it around
   WiFiManager wifiManager;
   
   if (resetSettings)
@@ -140,7 +138,7 @@ void WifiManager::saveConfigCallback () {
   WifiManager::_shouldSaveConfig = true;
 }
 
-void saveConfig(std::vector <WiFiManagerParameter> &wifiParameters)
+void WifiManager::saveConfig(std::vector <WiFiManagerParameter> &wifiParameters)
 {
   Filesystem fs;
   

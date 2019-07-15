@@ -9,7 +9,6 @@
 #include <string>
 
 // Library includes
-#include "NtpClientLib.h"
 #include "TimeLib.h"
 #include "ArduinoJson.h"
 

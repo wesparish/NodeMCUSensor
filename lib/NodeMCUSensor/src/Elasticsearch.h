@@ -11,7 +11,6 @@
 #include <time.h>
 
 // Library includes
-#include "NtpClientLib.h"
 #include "TimeLib.h"
 #include <ESP8266HTTPClient.h>
 
