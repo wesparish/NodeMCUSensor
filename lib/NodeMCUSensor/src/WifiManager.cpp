@@ -4,6 +4,7 @@
 
 
 #include "WifiManager.h"
+#include "WiFiManager.h"
 
 bool WifiManager::_shouldSaveConfig = false;
 
@@ -51,7 +52,13 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters)
        a != wifiParameters.size(); 
        a++)
   {
-    wifiManager.addParameter(&wifiParameters[a]);
+    WiFiManagerParameter *parm = new WiFiManagerParameter(
+      wifiParameters[a].getID(),
+      wifiParameters[a].getPlaceholder(),
+      wifiParameters[a].getValue(),
+      wifiParameters[a].getValueLength(),
+      wifiParameters[a].getCustomHTML());
+    wifiManager.addParameter(parm);
   }
   Serial.println("Done loading WifiManagerParameters...");
   
@@ -98,7 +105,13 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
        a != wifiParameters.size(); 
        a++)
   {
-    wifiManager.addParameter(&wifiParameters[a]);
+    WiFiManagerParameter *parm = new WiFiManagerParameter(
+      wifiParameters[a].getID(),
+      wifiParameters[a].getPlaceholder(),
+      wifiParameters[a].getValue(),
+      wifiParameters[a].getValueLength(),
+      wifiParameters[a].getCustomHTML());
+    wifiManager.addParameter(parm);
   }
   
   // set callback that gets called when connecting to previous 
