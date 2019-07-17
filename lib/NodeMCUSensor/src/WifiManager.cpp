@@ -42,22 +42,26 @@ WifiManager::WifiManager()
  * Constructor with parameter: 
  * vector - configuration parameters
  */
-WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters)
+WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters)
 {
   // With parameters, don't reset settings
   WiFiManager wifiManager;
+
+  // Attempt to load defaults from fs
+  std::vector <WiFiManagerParameter*> wifiParametersLocal = wifiParameters;
+  loadFromFS(wifiParameters);
   
   Serial.println("Loading WifiManagerParameters...");
-  for (std::vector<WiFiManagerParameter>::size_type a = 0; 
+  for (std::vector<WiFiManagerParameter*>::size_type a = 0; 
        a != wifiParameters.size(); 
        a++)
   {
     WiFiManagerParameter *parm = new WiFiManagerParameter(
-      wifiParameters[a].getID(),
-      wifiParameters[a].getPlaceholder(),
-      wifiParameters[a].getValue(),
-      wifiParameters[a].getValueLength(),
-      wifiParameters[a].getCustomHTML());
+      wifiParametersLocal[a]->getID(),
+      wifiParametersLocal[a]->getPlaceholder(),
+      wifiParametersLocal[a]->getValue(),
+      wifiParametersLocal[a]->getValueLength(),
+      wifiParametersLocal[a]->getCustomHTML());
     wifiManager.addParameter(parm);
   }
   Serial.println("Done loading WifiManagerParameters...");
@@ -81,7 +85,8 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters)
   
   if (WifiManager::_shouldSaveConfig)
   {
-    saveConfig(wifiParameters);
+    Serial.println("Saving Wifi config...");
+    saveConfig(wifiParametersLocal);
   }
 }
 
@@ -90,7 +95,7 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters)
  * vector - configuration parameters
  * bool - reset settings
  */
-WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
+WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters,
                          bool resetSettings)
 {
   // With parameters, reset settings
@@ -106,11 +111,11 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
        a++)
   {
     WiFiManagerParameter *parm = new WiFiManagerParameter(
-      wifiParameters[a].getID(),
-      wifiParameters[a].getPlaceholder(),
-      wifiParameters[a].getValue(),
-      wifiParameters[a].getValueLength(),
-      wifiParameters[a].getCustomHTML());
+      wifiParameters[a]->getID(),
+      wifiParameters[a]->getPlaceholder(),
+      wifiParameters[a]->getValue(),
+      wifiParameters[a]->getValueLength(),
+      wifiParameters[a]->getCustomHTML());
     wifiManager.addParameter(parm);
   }
   
@@ -131,6 +136,7 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter> &wifiParameters,
   
   if (WifiManager::_shouldSaveConfig)
   {
+    Serial.println("Saving Wifi config...");
     saveConfig(wifiParameters);
   }
 }
@@ -147,49 +153,49 @@ void WifiManager::configModeCallback (WiFiManager *myWiFiManager) {
 
 // callback notifying us of the need to save config
 void WifiManager::saveConfigCallback () {
-  Serial.println("Should save config");
+  Serial.println("Setting _shouldSaveConfig = true");
   WifiManager::_shouldSaveConfig = true;
 }
 
-void WifiManager::saveConfig(std::vector <WiFiManagerParameter> &wifiParameters)
+void WifiManager::saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters)
 {
   Filesystem fs;
   
   Serial.println("saving config to fs");
   
+  fs.printAllKeys();
   for (unsigned int a = 0;
        a != wifiParameters.size(); 
        ++a)
   {
-    fs.updateKey(wifiParameters[a].getID(), 
-                 wifiParameters[a].getValue());
+    fs.updateKey(wifiParameters[a]->getID(), 
+                 wifiParameters[a]->getValue());
   }
   
   fs.flushToFs();
+  fs.printAllKeys();
 }
 
-/**
- * @return bool
- */
-bool WifiManager::connectToWifi()
-{
-  return false;
-}
-
-void WifiManager::loadFromFS(std::vector <WiFiManagerParameter> &wifiParameters)
+void WifiManager::loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters)
 {
   Filesystem fs;
+  Serial.println("Loading config from fs");
+  fs.printAllKeys();
   for (unsigned int i=0; i < wifiParameters.size(); ++i)
   {
-    std::string savedValue = fs.loadFromFs(wifiParameters[0].getID()); 
+    Serial.print("Looking for value: ");
+    Serial.println(wifiParameters[i]->getID());
+    std::string savedValue = fs.loadFromFs(wifiParameters[i]->getID()); 
     if (savedValue != "")
     {
+      Serial.print("Found saved value for: ");
+      Serial.println(wifiParameters[i]->getID());
       WiFiManagerParameter *newParam = new 
-        WiFiManagerParameter(wifiParameters[i].getID(),
+        WiFiManagerParameter(wifiParameters[i]->getID(),
                              savedValue.c_str(),
                              savedValue.c_str(),
                              savedValue.size()+1);
-      wifiParameters[i] = *newParam;
+      wifiParameters[i] = newParam;
     }
   }
 }

@@ -178,13 +178,17 @@ void test_Filesystem_testKV(void) {
 
 void test_WifiManager_parameters(void) {
   // Test parameter
+  {
   WiFiManagerParameter parm1("parm1id", "parm1placeholder", "parm1default", 32);
+  }
 
   WiFiManagerParameter *parm2 = new WiFiManagerParameter("parm1id", "parm1placeholder", "parm1default", 32);
   delete parm2;
 
-  std::vector <WiFiManagerParameter> parmArray;
-  parmArray.push_back(parm1);
+  WiFiManagerParameter parm3("parm3id", "parm3placeholder", "parm3default", 32);
+
+  std::vector <WiFiManagerParameter*> parmArray;
+  parmArray.push_back(&parm3);
 }
 
 void test_WifiManager_testCtor(void) {
@@ -192,19 +196,44 @@ void test_WifiManager_testCtor(void) {
   WifiManager wm();
 
   // Test parameters, without reset
-  std::vector <WiFiManagerParameter> wifiParms;
+  std::vector <WiFiManagerParameter*> wifiParms;
   // WiFiManagerParameter(const char *id, const char *placeholder, const char *defaultValue, int length);
   //   WiFiManagerParameter custom_mqtt_server("server", "mqtt server", mqtt_server, 40);
   char parm1Default[32] = "parm1default";
   char parm2Default[32] = "parm2default";
-  WiFiManagerParameter parm1("parm1id", "parm1placeholder", parm1Default, 32); 
-  WiFiManagerParameter parm2("parm2id", "parm2placeholder", parm2Default, 32); 
-  wifiParms.push_back(parm1);
-  wifiParms.push_back(parm2);
+  WiFiManagerParameter parm1("parm1id", "parm1placeholder", parm1Default, 32, "customHTML1"); 
+  WiFiManagerParameter parm2("parm2id", "parm2placeholder", parm2Default, 32, "customHTML2"); 
+  wifiParms.push_back(&parm1);
+  wifiParms.push_back(&parm2);
 
   WifiManager wm2(wifiParms);
+
+  // Test parameters, with reset - REQUIRES MANUAL INTERVENTION
+  WifiManager wm3(wifiParms, true);
+
+  // Verify parameters from fs
+  WiFiManagerParameter parm3("parm1id", "", "", 32);
+  WiFiManagerParameter parm4("parm2id", "", "", 32);
+  std::vector <WiFiManagerParameter*> wifiParms2;
+  wifiParms2.push_back(&parm3);
+  wifiParms2.push_back(&parm4);
+  wm2.loadFromFS(wifiParms2);
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getID(), "parm1id");
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getPlaceholder(), "parm1placeholder");
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getValue(), "parm1default");
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getValueLength(), 32);
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getCustomHTML(), "customHTML1");
+
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getID(), "parm2id");
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getPlaceholder(), "parm2placeholder");
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getValue(), "parm2default");
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getValueLength(), 32);
+  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getCustomHTML(), "customHTML2");
   
-  // Test parameters, with reset
+  // Clear parameters
+  
+  // Create with new parameters, expect saved to be overwritten instead
+  
 }
 void setup() {
     UNITY_BEGIN();

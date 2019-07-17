@@ -15,6 +15,9 @@ class Filesystem
 public:
   Filesystem();
 
+  // Prints all keys and values from FS
+  void printAllKeys();
+
   // Returns a value from FS, given a key
   std::string loadFromFs(std::string key);
   

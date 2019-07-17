@@ -19,9 +19,26 @@ Filesystem::Filesystem()
   _kvPairs = readFromSPIFFS();
 }
 
+void
+Filesystem::printAllKeys()
+{
+  Serial.println("Dumping all fs keys");
+  std::map<std::string, std::string>::iterator i;
+  for ( i = _kvPairs.begin();
+        i != _kvPairs.end();
+        i++ )
+  {
+    Serial.print(i->first.c_str());
+    Serial.print(" -> ");
+    Serial.println(i->second.c_str());
+  }
+}
+
 std::string
 Filesystem::loadFromFs(std::string key)
 {
+  Serial.print("Looking for key in fs: ");
+  Serial.println(key.c_str());
   std::string retVal = "";
   if(_kvPairs.find(key) != _kvPairs.end())
   {
