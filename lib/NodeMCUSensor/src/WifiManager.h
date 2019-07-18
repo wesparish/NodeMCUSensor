@@ -22,9 +22,10 @@ public:
   WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters);
   
   void loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters);
+  void saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters);
+
 protected:
   static void configModeCallback(WiFiManager *myWiFiManager);
-  void saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters);
   static void saveConfigCallback();
   
 private:

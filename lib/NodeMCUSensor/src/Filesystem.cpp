@@ -17,6 +17,7 @@
 Filesystem::Filesystem()
 {
   _kvPairs = readFromSPIFFS();
+  printAllKeys();
 }
 
 void
@@ -60,17 +61,17 @@ Filesystem::readFromSPIFFS()
     }
   }
 
-  Serial.println("mounting FS...");
+  Serial.println("Mounting FS...");
   if (SPIFFS.begin()) {
-    Serial.println("mounted file system");
+    Serial.println("Mounted file system");
     if (SPIFFS.exists("/config.json"))
     {
       //file exists, reading and loading
-      Serial.println("reading config file");
+      Serial.println("Reading config file");
       File configFile = SPIFFS.open("/config.json", "r");
       if (configFile)
       {
-        Serial.println("opened config file");
+        Serial.println("Opened config file");
         size_t size = configFile.size();
         // Allocate a buffer to store contents of the file.
         std::unique_ptr<char[]> buf(new char[size]);
@@ -78,25 +79,28 @@ Filesystem::readFromSPIFFS()
         configFile.readBytes(buf.get(), size);
         configFile.close();
         StaticJsonDocument<512> jsonDocument;
-        if (DeserializationError::Ok != 
-            deserializeJson(jsonDocument, buf.get()) ) {
+        DeserializationError err = deserializeJson(jsonDocument, buf.get());
+        if (!err) {
           serializeJson(jsonDocument, Serial);
-          Serial.println("\nparsed json");
+          Serial.println();
+          Serial.println("Parsed json");
 
           JsonObject obj = jsonDocument.as<JsonObject>();
           for (JsonObject::iterator it=obj.begin(); it!=obj.end(); ++it) {
             retVal[it->key().c_str()] = it->value().as<char*>();
           }
+          printAllKeys();
         } else
         {
-          Serial.println("failed to load json config");
+          Serial.print("Failed to load json config: ");
+          Serial.println(err.c_str());
         }
       }
     }
   }
   else
   {
-    Serial.println("failed to mount FS");
+    Serial.println("Failed to mount FS");
   }
 
   return retVal;
@@ -106,7 +110,7 @@ bool
 Filesystem::updateKey(std::string key, std::string value)
 {
   _kvPairs[key] = value;
-  return true;
+  return flushToFs();
 }
 
 bool
@@ -119,6 +123,7 @@ Filesystem::deleteKey(std::string key)
 bool
 Filesystem::flushToFs()
 {
+  bool retVal = true;
   StaticJsonDocument<512> jsonDocument;
 
   std::map<std::string, std::string>::iterator i;
@@ -131,11 +136,12 @@ Filesystem::flushToFs()
 
   File configFile = SPIFFS.open("/config.json", "w");
   if (!configFile) {
-    Serial.println("failed to open config file for writing");
+    Serial.println("Failed to open config file for writing");
+    retVal = false;
   }
 
   serializeJson(jsonDocument, Serial);
   serializeJson(jsonDocument, configFile);
   configFile.close();
-  return true;
+  return retVal;
 }

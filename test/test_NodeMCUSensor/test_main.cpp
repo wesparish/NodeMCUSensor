@@ -209,40 +209,36 @@ void test_WifiManager_testCtor(void) {
   WifiManager wm2(wifiParms);
 
   // Test parameters, with reset - REQUIRES MANUAL INTERVENTION
-  WifiManager wm3(wifiParms, true);
+  // WifiManager wm3(wifiParms, true);
 
   // Verify parameters from fs
-  WiFiManagerParameter parm3("parm1id", "", "", 32);
-  WiFiManagerParameter parm4("parm2id", "", "", 32);
+  WiFiManagerParameter parm3("parm1id", "parm1-testdata", "parm1-testdata", 32);
+  WiFiManagerParameter parm4("parm2id", "parm2-testdata", "parm2-testdata", 32);
   std::vector <WiFiManagerParameter*> wifiParms2;
   wifiParms2.push_back(&parm3);
   wifiParms2.push_back(&parm4);
-  wm2.loadFromFS(wifiParms2);
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getID(), "parm1id");
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getPlaceholder(), "parm1placeholder");
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getValue(), "parm1default");
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getValueLength(), 32);
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[0]->getCustomHTML(), "customHTML1");
 
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getID(), "parm2id");
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getPlaceholder(), "parm2placeholder");
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getValue(), "parm2default");
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getValueLength(), 32);
-  TEST_ASSERT_EQUAL_STRING(wifiParms2[1]->getCustomHTML(), "customHTML2");
-  
-  // Clear parameters
-  
-  // Create with new parameters, expect saved to be overwritten instead
-  
+  // Write some test data to SPIFFS to pick up
+  wm2.saveConfig(wifiParms2);
+
+  wm2.loadFromFS(wifiParms);
+
+  TEST_ASSERT_EQUAL_STRING("parm1id", wifiParms2[0]->getID());
+  TEST_ASSERT_EQUAL_STRING("parm1-testdata", wifiParms2[0]->getPlaceholder());
+  TEST_ASSERT_EQUAL_STRING("parm1-testdata", wifiParms2[0]->getValue());
+
+  TEST_ASSERT_EQUAL_STRING("parm2id", wifiParms2[1]->getID());
+  TEST_ASSERT_EQUAL_STRING("parm2-testdata", wifiParms2[1]->getPlaceholder());
+  TEST_ASSERT_EQUAL_STRING("parm2-testdata", wifiParms2[1]->getValue());
 }
 void setup() {
     UNITY_BEGIN();
 
-//    RUN_TEST(test_MetricTemp_getJson);
-//    RUN_TEST(test_Elasticsearch_getFullURL);
-//    RUN_TEST(test_Elasticsearch_indexRecord);
-//    RUN_TEST(test_SensorTemp_readSensor);
-//    RUN_TEST(test_Filesystem_testKV);
+    RUN_TEST(test_MetricTemp_getJson);
+    RUN_TEST(test_Elasticsearch_getFullURL);
+    RUN_TEST(test_Elasticsearch_indexRecord);
+    RUN_TEST(test_SensorTemp_readSensor);
+    RUN_TEST(test_Filesystem_testKV);
     RUN_TEST(test_WifiManager_parameters);
     RUN_TEST(test_WifiManager_testCtor);
 

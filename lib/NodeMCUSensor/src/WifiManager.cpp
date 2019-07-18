@@ -31,7 +31,7 @@ WifiManager::WifiManager()
   //   if it does not connect it starts an access point with the specified name
   //   and goes into a blocking loop awaiting configuration
   if (!wifiManager.autoConnect()) {
-    Serial.println("failed to connect and hit timeout");
+    Serial.println("Failed to connect and hit timeout");
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
     delay(1000);
@@ -49,7 +49,7 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters)
 
   // Attempt to load defaults from fs
   std::vector <WiFiManagerParameter*> wifiParametersLocal = wifiParameters;
-  loadFromFS(wifiParameters);
+  loadFromFS(wifiParametersLocal);
   
   Serial.println("Loading WifiManagerParameters...");
   for (std::vector<WiFiManagerParameter*>::size_type a = 0; 
@@ -76,7 +76,7 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters)
   //   and goes into a blocking loop awaiting configuration
   Serial.println("Starting WifiManager autoConnect()...");
   if (!wifiManager.autoConnect()) {
-    Serial.println("failed to connect and hit timeout");
+    Serial.println("Failed to connect and hit timeout");
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
     delay(1000);
@@ -106,16 +106,20 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters,
     wifiManager.resetSettings();
   }
 
+  // Attempt to load defaults from fs
+  std::vector <WiFiManagerParameter*> wifiParametersLocal = wifiParameters;
+  loadFromFS(wifiParametersLocal);
+
   for (std::vector<WiFiManagerParameter>::size_type a = 0; 
        a != wifiParameters.size(); 
        a++)
   {
     WiFiManagerParameter *parm = new WiFiManagerParameter(
-      wifiParameters[a]->getID(),
-      wifiParameters[a]->getPlaceholder(),
-      wifiParameters[a]->getValue(),
-      wifiParameters[a]->getValueLength(),
-      wifiParameters[a]->getCustomHTML());
+      wifiParametersLocal[a]->getID(),
+      wifiParametersLocal[a]->getPlaceholder(),
+      wifiParametersLocal[a]->getValue(),
+      wifiParametersLocal[a]->getValueLength(),
+      wifiParametersLocal[a]->getCustomHTML());
     wifiManager.addParameter(parm);
   }
   
@@ -128,7 +132,7 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters,
   //   if it does not connect it starts an access point with the specified name
   //   and goes into a blocking loop awaiting configuration
   if (!wifiManager.autoConnect()) {
-    Serial.println("failed to connect and hit timeout");
+    Serial.println("Failed to connect and hit timeout");
     //reset and try again, or maybe put it to deep sleep
     ESP.reset();
     delay(1000);
@@ -161,7 +165,7 @@ void WifiManager::saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters
 {
   Filesystem fs;
   
-  Serial.println("saving config to fs");
+  Serial.println("Saving config to fs");
   
   fs.printAllKeys();
   for (unsigned int a = 0;
@@ -179,16 +183,12 @@ void WifiManager::saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters
 void WifiManager::loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters)
 {
   Filesystem fs;
-  Serial.println("Loading config from fs");
-  fs.printAllKeys();
   for (unsigned int i=0; i < wifiParameters.size(); ++i)
   {
-    Serial.print("Looking for value: ");
     Serial.println(wifiParameters[i]->getID());
     std::string savedValue = fs.loadFromFs(wifiParameters[i]->getID()); 
     if (savedValue != "")
     {
-      Serial.print("Found saved value for: ");
       Serial.println(wifiParameters[i]->getID());
       WiFiManagerParameter *newParam = new 
         WiFiManagerParameter(wifiParameters[i]->getID(),
@@ -196,6 +196,10 @@ void WifiManager::loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters
                              savedValue.c_str(),
                              savedValue.size()+1);
       wifiParameters[i] = newParam;
+    }
+    else
+    {
+      Serial.println(wifiParameters[i]->getID());
     }
   }
 }
