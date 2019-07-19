@@ -234,13 +234,13 @@ void test_WifiManager_testCtor(void) {
 void setup() {
     UNITY_BEGIN();
 
+    RUN_TEST(test_WifiManager_parameters);
+    RUN_TEST(test_WifiManager_testCtor);
     RUN_TEST(test_MetricTemp_getJson);
     RUN_TEST(test_Elasticsearch_getFullURL);
     RUN_TEST(test_Elasticsearch_indexRecord);
     RUN_TEST(test_SensorTemp_readSensor);
     RUN_TEST(test_Filesystem_testKV);
-    RUN_TEST(test_WifiManager_parameters);
-    RUN_TEST(test_WifiManager_testCtor);
 
     UNITY_END();
 }

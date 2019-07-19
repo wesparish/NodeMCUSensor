@@ -12,6 +12,9 @@
 
 // Library includes
 #include "TimeLib.h"
+
+// WiFi / HTTPClient
+#include <WiFiClient.h>
 #include <ESP8266HTTPClient.h>
 
 // Custom includes

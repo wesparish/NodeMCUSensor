@@ -21,6 +21,9 @@ Elasticsearch::Elasticsearch(std::string indexBasename,
   _indexBasename = indexBasename;
   _elasticsearchURL = elasticsearchURL;
   _location = location;
+
+  // Attempt to sync to NTP
+  NTP.begin();
 }
 
 
@@ -66,14 +69,14 @@ bool Elasticsearch::httpPost(std::string const &payload)
   std::string fullUrl = getFullURL();
 
   int httpCode = -1;
+  WiFiClient client;
   HTTPClient http;
-  //     bool begin(WiFiClient &client, String url);
-  http.begin(fullUrl.c_str());
+  http.begin(client, fullUrl.c_str());
   http.addHeader("Content-Type", String("application/json"));
   httpCode = http.POST(payload.c_str());
   http.end();
 
   Serial.printf("\nHTTP Code: [%d] getString(): %s\n", httpCode, http.getString().c_str());
-  return httpCode < 400;
+  return httpCode > 199 && httpCode < 400;
 }
 
