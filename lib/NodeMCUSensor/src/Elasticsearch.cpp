@@ -68,7 +68,7 @@ bool Elasticsearch::httpPost(std::string const &payload)
 {
   std::string fullUrl = getFullURL();
 
-  int httpCode = -1;
+  int httpCode = -99;
   WiFiClient client;
   HTTPClient http;
   http.begin(client, fullUrl.c_str());

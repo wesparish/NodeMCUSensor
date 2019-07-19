@@ -21,7 +21,7 @@ public:
               bool resetWifiSettings);
   WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters);
   
-  void loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters);
+  bool loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters);
   void saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters);
 
 protected:
@@ -29,6 +29,10 @@ protected:
   static void saveConfigCallback();
   
 private:
+  // Common to all ctors
+  void wmSetup(WiFiManager&, bool startCaptivePortal);
+  // Common to parameter ctors
+  bool parameterSetup(WiFiManager&, std::vector<WiFiManagerParameter*>&);
   static bool _shouldSaveConfig;
 };
 

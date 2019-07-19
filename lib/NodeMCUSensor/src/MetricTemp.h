@@ -36,7 +36,6 @@ public:
 private: 
   float temp;
   float humidity;
-  std::string location;
   float heatIndex;
 };
 

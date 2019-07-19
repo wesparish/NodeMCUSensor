@@ -28,3 +28,16 @@ std::string MetricBase::getTimestamp()
 
   return std::string(timestamp);
 }
+
+std::string
+MetricBase::getLocation()
+{
+  return this->location;
+}
+
+void
+MetricBase::setLocation(std::string location)
+{
+  this->location = location;
+}
+

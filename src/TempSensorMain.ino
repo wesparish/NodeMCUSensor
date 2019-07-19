@@ -10,37 +10,53 @@
 
 // Defines
 #define SLEEP_TIME 10000
+#define SWITCHPIN 4
 
 // Globals
 Elasticsearch *es = 0;
 SensorTemp    *tSensor = 0;
 WifiManager   *wifiManager = 0;
 
+std::string esIndexName = "";
+std::string esHost = "";
+std::string esLocation = "";
+
 void setup()
 {
   Serial.begin(115200);
   Serial.println("[debug] Starting setup()");
 
-  Filesystem filesystem;
-  std::string indexName(filesystem.loadFromFs("indexName"));
-  std::string esHost(filesystem.loadFromFs("esHost"));
-  std::string location(filesystem.loadFromFs("location"));
+  WiFiManagerParameter _esIndexName("esIndexName", "tempsensor", "tempsensor", 32);
+  WiFiManagerParameter _esHost("esHost", "http://elasticsearch.weshouse:9200", "http://elasticsearch.weshouse:9200", 64);
+  WiFiManagerParameter _esLocation("esLocation", "weshouse", "weshouse", 32);
 
-  if (! indexName.compare("") ) {
-    Serial.println("Could not load indexName from fs");
-  }
-  if (! esHost.compare("") ) {
-    Serial.println("Could not load esHost from fs");
-  }
-  if (! location.compare("") ) {
-    Serial.println("Could not load location from fs");
-  }
+  std::vector <WiFiManagerParameter*> wifiParms;
+  wifiParms.push_back(&_esIndexName);
+  wifiParms.push_back(&_esHost);
+  wifiParms.push_back(&_esLocation);
 
-  es = new Elasticsearch("wessvrroom", 
-                         "elasticsearch.weshouse:9200", 
-                         "weshouse");
+  // Reset settings if switch is held down on startup
+  bool resetSettings = false;
+  if (!digitalRead(SWITCHPIN))
+  {
+    resetSettings = true;
+  }
+  
+  wifiManager = new WifiManager(wifiParms, resetSettings);
+
+  Serial.printf("_esIndexName: %s\n", _esIndexName.getValue());
+  Serial.printf("_esHost: %s\n", _esHost.getValue());
+  Serial.printf("_esLocation: %s\n", _esLocation.getValue());
+
+  es = new Elasticsearch(_esIndexName.getValue(), 
+                         _esHost.getValue(), 
+                         _esLocation.getValue());
+
   tSensor = new SensorTemp();
-  wifiManager = new WifiManager();
+
+  esIndexName = _esIndexName.getValue();
+  esHost = _esHost.getValue();
+  esLocation = _esLocation.getValue();
 }
 
 void loop()
@@ -48,12 +64,24 @@ void loop()
   Serial.println("[debug] In loop()");
 
   MetricTemp metricTemp;
+  metricTemp.setLocation(esLocation);
   if ( tSensor->readSensor(metricTemp) )
   {
     Serial.print("[debug] Read MetricTemp(): ");
     Serial.println(metricTemp.getJSON().c_str());
     // Successfully read temp, send it
-    es->indexRecord( metricTemp );
+    if ( es->indexRecord( metricTemp ) )
+    {
+      Serial.println("Successfully indexed record to Elasticsearch!");
+    }
+    else
+    {
+      Serial.println("Error: Failed to index record to Elasticsearch!");
+    }
+  }
+  else
+  {
+    Serial.println("Error reading sensor! Not sending metric.");
   }
 
   delay(SLEEP_TIME);

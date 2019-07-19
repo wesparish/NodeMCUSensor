@@ -21,21 +21,7 @@ WifiManager::WifiManager()
 {
   // No parameters, don't reset settings
   WiFiManager wifiManager;
-  
-  // set callback that gets called when connecting to previous 
-  //   WiFi fails, and enters Access Point mode
-  wifiManager.setAPCallback(WifiManager::configModeCallback);
-  wifiManager.setSaveConfigCallback(WifiManager::saveConfigCallback);  
-  
-  // fetches ssid and pass and tries to connect
-  //   if it does not connect it starts an access point with the specified name
-  //   and goes into a blocking loop awaiting configuration
-  if (!wifiManager.autoConnect()) {
-    Serial.println("Failed to connect and hit timeout");
-    //reset and try again, or maybe put it to deep sleep
-    ESP.reset();
-    delay(1000);
-  }
+  wmSetup(wifiManager, false);
 }
 
 /**
@@ -46,47 +32,14 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters)
 {
   // With parameters, don't reset settings
   WiFiManager wifiManager;
-
-  // Attempt to load defaults from fs
-  std::vector <WiFiManagerParameter*> wifiParametersLocal = wifiParameters;
-  loadFromFS(wifiParametersLocal);
-  
-  Serial.println("Loading WifiManagerParameters...");
-  for (std::vector<WiFiManagerParameter*>::size_type a = 0; 
-       a != wifiParameters.size(); 
-       a++)
-  {
-    WiFiManagerParameter *parm = new WiFiManagerParameter(
-      wifiParametersLocal[a]->getID(),
-      wifiParametersLocal[a]->getPlaceholder(),
-      wifiParametersLocal[a]->getValue(),
-      wifiParametersLocal[a]->getValueLength(),
-      wifiParametersLocal[a]->getCustomHTML());
-    wifiManager.addParameter(parm);
-  }
-  Serial.println("Done loading WifiManagerParameters...");
-  
-  // set callback that gets called when connecting to previous 
-  //   WiFi fails, and enters Access Point mode
-  wifiManager.setAPCallback(WifiManager::configModeCallback);
-  wifiManager.setSaveConfigCallback(WifiManager::saveConfigCallback);  
-  
-  // fetches ssid and pass and tries to connect
-  //   if it does not connect it starts an access point with the specified name
-  //   and goes into a blocking loop awaiting configuration
-  Serial.println("Starting WifiManager autoConnect()...");
-  if (!wifiManager.autoConnect()) {
-    Serial.println("Failed to connect and hit timeout");
-    //reset and try again, or maybe put it to deep sleep
-    ESP.reset();
-    delay(1000);
-  }
-  Serial.println("Finished WifiManager autoConnect()...");
+  bool loadedFromFS = parameterSetup(wifiManager, wifiParameters);
+  // Force captive protal if parms not loaded from FS
+  wmSetup(wifiManager, !loadedFromFS);
   
   if (WifiManager::_shouldSaveConfig)
   {
     Serial.println("Saving Wifi config...");
-    saveConfig(wifiParametersLocal);
+    saveConfig(wifiParameters);
   }
 }
 
@@ -106,42 +59,70 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters,
     wifiManager.resetSettings();
   }
 
-  // Attempt to load defaults from fs
-  std::vector <WiFiManagerParameter*> wifiParametersLocal = wifiParameters;
-  loadFromFS(wifiParametersLocal);
-
-  for (std::vector<WiFiManagerParameter>::size_type a = 0; 
-       a != wifiParameters.size(); 
-       a++)
-  {
-    WiFiManagerParameter *parm = new WiFiManagerParameter(
-      wifiParametersLocal[a]->getID(),
-      wifiParametersLocal[a]->getPlaceholder(),
-      wifiParametersLocal[a]->getValue(),
-      wifiParametersLocal[a]->getValueLength(),
-      wifiParametersLocal[a]->getCustomHTML());
-    wifiManager.addParameter(parm);
-  }
-  
-  // set callback that gets called when connecting to previous 
-  //   WiFi fails, and enters Access Point mode
-  wifiManager.setAPCallback(WifiManager::configModeCallback);
-  wifiManager.setSaveConfigCallback(WifiManager::saveConfigCallback);  
-  
-  // fetches ssid and pass and tries to connect
-  //   if it does not connect it starts an access point with the specified name
-  //   and goes into a blocking loop awaiting configuration
-  if (!wifiManager.autoConnect()) {
-    Serial.println("Failed to connect and hit timeout");
-    //reset and try again, or maybe put it to deep sleep
-    ESP.reset();
-    delay(1000);
-  }
+  bool loadedFromFS = parameterSetup(wifiManager, wifiParameters);
+  // Force captive protal if parms not loaded from FS
+  wmSetup(wifiManager, !loadedFromFS);
   
   if (WifiManager::_shouldSaveConfig)
   {
     Serial.println("Saving Wifi config...");
     saveConfig(wifiParameters);
+  }
+}
+
+bool WifiManager::parameterSetup(WiFiManager &wifiManager, std::vector <WiFiManagerParameter*> &wifiParameters)
+{
+  // Attempt to load defaults from fs
+  bool loadedFromFS = loadFromFS(wifiParameters);
+  
+  Serial.println("Loading WifiManagerParameters...");
+  for (std::vector<WiFiManagerParameter*>::size_type a = 0; 
+       a != wifiParameters.size(); 
+       a++)
+  {
+    WiFiManagerParameter *parm = new WiFiManagerParameter(
+      wifiParameters[a]->getID(),
+      wifiParameters[a]->getPlaceholder(),
+      wifiParameters[a]->getValue(),
+      wifiParameters[a]->getValueLength(),
+      wifiParameters[a]->getCustomHTML());
+    wifiManager.addParameter(parm);
+  }
+  Serial.println("Done loading WifiManagerParameters...");
+
+  return loadedFromFS;
+}
+
+void WifiManager::wmSetup(WiFiManager &wifiManager, bool forceCaptivePortal)
+{
+  // set callback that gets called when connecting to previous 
+  //   WiFi fails, and enters Access Point mode
+  wifiManager.setAPCallback(WifiManager::configModeCallback);
+  wifiManager.setSaveConfigCallback(WifiManager::saveConfigCallback);  
+  
+  if ( forceCaptivePortal )
+  {
+    Serial.println("Starting WifiManager captive portal...");
+    if (!wifiManager.startConfigPortal())
+    {
+      Serial.println("Failed to connect and hit timeout");
+      ESP.reset();
+      delay(1000);
+    }
+  }
+  else
+  {
+    // fetches ssid and pass and tries to connect
+    //   if it does not connect it starts an access point with the specified name
+    //   and goes into a blocking loop awaiting configuration
+    Serial.println("Starting WifiManager autoConnect()...");
+    if (!wifiManager.autoConnect())
+    {
+      Serial.println("Failed to connect and hit timeout");
+      ESP.reset();
+      delay(1000);
+    }
+    Serial.println("Finished WifiManager autoConnect()...");
   }
 }
 
@@ -180,8 +161,9 @@ void WifiManager::saveConfig(std::vector <WiFiManagerParameter*> &wifiParameters
   fs.printAllKeys();
 }
 
-void WifiManager::loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters)
+bool WifiManager::loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters)
 {
+  bool retVal = true;
   Filesystem fs;
   for (unsigned int i=0; i < wifiParameters.size(); ++i)
   {
@@ -200,6 +182,9 @@ void WifiManager::loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters
     else
     {
       Serial.println(wifiParameters[i]->getID());
+      retVal = false;
     }
   }
+
+  return retVal;
 }
