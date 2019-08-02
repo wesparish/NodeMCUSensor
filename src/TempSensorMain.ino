@@ -39,6 +39,7 @@ void setup()
   bool resetSettings = false;
   if (!digitalRead(SWITCHPIN))
   {
+    Serial.println("[debug] Button press detected, resetting settings!!");
     resetSettings = true;
   }
   

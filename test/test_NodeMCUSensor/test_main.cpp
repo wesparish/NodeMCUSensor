@@ -189,6 +189,15 @@ void test_WifiManager_parameters(void) {
 
   std::vector <WiFiManagerParameter*> parmArray;
   parmArray.push_back(&parm3);
+
+  // Test loadFromFS to ensure getValueLength() returns correctly
+  // Instantiate default ctor to not load parameters during ctor
+  WifiManager managerTest;
+  managerTest.saveConfig(parmArray);
+  bool result = managerTest.loadFromFS(parmArray);
+  TEST_ASSERT_TRUE(result);
+
+  TEST_ASSERT_EQUAL_INT(32, parmArray[0]->getValueLength());
 }
 
 void test_WifiManager_testCtor(void) {

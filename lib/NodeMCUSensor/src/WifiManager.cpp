@@ -56,6 +56,7 @@ WifiManager::WifiManager(std::vector <WiFiManagerParameter*> &wifiParameters,
   
   if (resetSettings)
   {
+    Serial.println("WifiManager resetting settings!!");
     wifiManager.resetSettings();
   }
 
@@ -176,7 +177,7 @@ bool WifiManager::loadFromFS(std::vector <WiFiManagerParameter*> &wifiParameters
         WiFiManagerParameter(wifiParameters[i]->getID(),
                              savedValue.c_str(),
                              savedValue.c_str(),
-                             savedValue.size()+1);
+                             wifiParameters[i]->getValueLength());
       wifiParameters[i] = newParam;
     }
     else
