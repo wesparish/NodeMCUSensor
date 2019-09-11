@@ -41,6 +41,8 @@ void setup()
   {
     Serial.println("[debug] Button press detected, resetting settings!!");
     resetSettings = true;
+    Filesystem fs;
+    fs.deleteConfigFile();
   }
   
   wifiManager = new WifiManager(wifiParms, resetSettings);

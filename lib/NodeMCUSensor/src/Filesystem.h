@@ -29,6 +29,12 @@ public:
   
   // Flushes data out to filesystem
   bool flushToFs();
+
+  // Delete config file
+  bool deleteConfigFile();
+
+  // Returns true if config file exists
+  bool configFileExists();
 protected:
   // Read all KVs from SPIFFS
   std::map <std::string, std::string> readFromSPIFFS();

@@ -240,6 +240,15 @@ void test_WifiManager_testCtor(void) {
   TEST_ASSERT_EQUAL_STRING("parm2-testdata", wifiParms2[1]->getPlaceholder());
   TEST_ASSERT_EQUAL_STRING("parm2-testdata", wifiParms2[1]->getValue());
 }
+
+void test_Filesystem_testFS(void) {
+  // Test deleting config file
+  Filesystem fs;
+  TEST_ASSERT_TRUE(fs.configFileExists());
+  fs.deleteConfigFile();
+  TEST_ASSERT_FALSE(fs.configFileExists());
+}
+
 void setup() {
     UNITY_BEGIN();
 
@@ -250,6 +259,7 @@ void setup() {
     RUN_TEST(test_Elasticsearch_indexRecord);
     RUN_TEST(test_SensorTemp_readSensor);
     RUN_TEST(test_Filesystem_testKV);
+    RUN_TEST(test_Filesystem_testFS);
 
     UNITY_END();
 }

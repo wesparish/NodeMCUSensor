@@ -145,3 +145,16 @@ Filesystem::flushToFs()
   configFile.close();
   return retVal;
 }
+
+bool
+Filesystem::deleteConfigFile()
+{
+  return SPIFFS.remove("/config.json");
+}
+
+bool
+Filesystem::configFileExists()
+{
+  return SPIFFS.exists("/config.json");
+}
+
