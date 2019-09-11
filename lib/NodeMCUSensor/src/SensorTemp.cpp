@@ -5,6 +5,8 @@
 
 #include "SensorTemp.h"
 
+#define DHT_DEBUG
+
 /**
  * SensorTemp implementation
  * 

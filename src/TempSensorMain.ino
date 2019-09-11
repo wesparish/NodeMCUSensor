@@ -27,8 +27,8 @@ void setup()
   Serial.println("[debug] Starting setup()");
 
   WiFiManagerParameter _esIndexName("esIndexName", "tempsensor", "tempsensor", 32);
-  WiFiManagerParameter _esHost("esHost", "http://elasticsearch.weshouse:9200", "http://elasticsearch.weshouse:9200", 64);
-  WiFiManagerParameter _esLocation("esLocation", "weshouse", "weshouse", 32);
+  WiFiManagerParameter _esHost("esHost", "http://elasticsearch.jamiehouse:9200", "http://elasticsearch.jamiehouse:9200", 64);
+  WiFiManagerParameter _esLocation("esLocation", "barn", "barn", 32);
 
   std::vector <WiFiManagerParameter*> wifiParms;
   wifiParms.push_back(&_esIndexName);
@@ -37,6 +37,7 @@ void setup()
 
   // Reset settings if switch is held down on startup
   bool resetSettings = false;
+  pinMode(D2, INPUT);
   if (!digitalRead(SWITCHPIN))
   {
     Serial.println("[debug] Button press detected, resetting settings!!");
@@ -67,25 +68,33 @@ void loop()
   Serial.println("[debug] In loop()");
 
   MetricTemp metricTemp;
+  Serial.println("[debug] 1");
   metricTemp.setLocation(esLocation);
+  Serial.println("[debug] 2");
   if ( tSensor->readSensor(metricTemp) )
   {
     Serial.print("[debug] Read MetricTemp(): ");
     Serial.println(metricTemp.getJSON().c_str());
+    Serial.println("[debug] 3");
     // Successfully read temp, send it
     if ( es->indexRecord( metricTemp ) )
     {
+      Serial.println("[debug] 4");
       Serial.println("Successfully indexed record to Elasticsearch!");
     }
     else
     {
+      Serial.println("[debug] 5");
       Serial.println("Error: Failed to index record to Elasticsearch!");
     }
   }
   else
   {
+    Serial.println("[debug] 6");
     Serial.println("Error reading sensor! Not sending metric.");
   }
-
+  
+  Serial.println("[debug] 7");
   delay(SLEEP_TIME);
+  Serial.println("[debug] 8");
 }
