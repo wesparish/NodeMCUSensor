@@ -10,7 +10,9 @@
 
 // Defines
 #define SLEEP_TIME 10000
-#define SWITCHPIN 4
+#define SWITCHPIN 4 // D2
+#define DHTPIN 5 // D1
+#define DHTTYPE DHT22
 
 // Globals
 Elasticsearch *es = 0;
@@ -37,6 +39,7 @@ void setup()
 
   // Reset settings if switch is held down on startup
   bool resetSettings = false;
+  pinMode(SWITCHPIN, INPUT_PULLUP);
   if (!digitalRead(SWITCHPIN))
   {
     Serial.println("[debug] Button press detected, resetting settings!!");
@@ -55,7 +58,7 @@ void setup()
                          _esHost.getValue(), 
                          _esLocation.getValue());
 
-  tSensor = new SensorTemp();
+  tSensor = new SensorTemp(DHTPIN, DHTTYPE);
 
   esIndexName = _esIndexName.getValue();
   esHost = _esHost.getValue();

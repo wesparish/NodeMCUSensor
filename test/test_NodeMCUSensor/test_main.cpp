@@ -62,7 +62,7 @@ void setUp(void) {
 // 
 // //  wm = new WifiManager();
 // //  es = new Elasticsearch("TEST",
-// //                         "elasticsearch.weshouse:9200",
+// //                         "elasticsearch.jamiehouse:9200",
 // //                         "unittest");
 // 
 //   NTP.begin();
@@ -115,11 +115,11 @@ void test_Elasticsearch_getFullURL(void) {
          &day, &month, &year);
 
   Elasticsearch es("testindex",
-                   "http://elasticsearch.weshouse:9200",
+                   "http://elasticsearch.jamiehouse:9200",
                    "unittest-location");
   char expectedFullUrl[128] = {0};
   sprintf(expectedFullUrl, "%s/%s-%s-%04d.%02d.%02d/doc",
-                           "http://elasticsearch.weshouse:9200",
+                           "http://elasticsearch.jamiehouse:9200",
                            "testindex",
                            "unittest-location",
                            year, month, day);
@@ -131,7 +131,7 @@ void test_Elasticsearch_getFullURL(void) {
 void test_Elasticsearch_indexRecord(void) {
   MetricTemp mt2(79.1, 40.5, "SunnyLocation", 75.123);
   Elasticsearch es("testindex",
-                   "http://elasticsearch.weshouse:9200",
+                   "http://elasticsearch.jamiehouse:9200",
                    "unittest");
   TEST_ASSERT_TRUE(es.indexRecord(mt2.getJSON()));
   TEST_ASSERT_TRUE(es.indexRecord(mt2));
